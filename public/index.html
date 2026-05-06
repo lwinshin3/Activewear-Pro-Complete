@@ -501,6 +501,7 @@
             <nav>
                 <a onclick="showSection('home')">Home</a>
                 <a onclick="showSection('shop')">Shop</a>
+                <a onclick="showSection('track')">Track Order</a>
                 <a onclick="showSection('about')">About</a>
                 <a onclick="showSection('contact')">Contact</a>
                 <a onclick="showSection('admin')">Admin</a>
@@ -516,6 +517,72 @@
             </div>
         </div>
     </header>
+
+
+    <!-- Order Tracking Section -->
+    <section id="track" class="section hidden">
+        <div class="container">
+            <h2 class="section-title">Track Your Order</h2>
+            
+            <div style="background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem;">
+                <div class="form-group">
+                    <label>Order Number</label>
+                    <input type="text" id="trackOrderNumber" placeholder="e.g., ORD-1234567890">
+                </div>
+                <button class="btn" onclick="trackOrder()" style="width: 100%;">Track Order</button>
+            </div>
+
+            <div id="trackingResult" style="display: none; background: white; border-radius: 8px; padding: 2rem;">
+                <h3 style="color: #1e3a5f; margin-bottom: 1.5rem;">📦 Order Details</h3>
+                
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <strong>Order Number:</strong>
+                            <p id="trackOrderNum" style="color: #ff6b35; font-size: 1.1rem;"></p>
+                        </div>
+                        <div>
+                            <strong>Order Date:</strong>
+                            <p id="trackOrderDate"></p>
+                        </div>
+                        <div>
+                            <strong>Total Amount:</strong>
+                            <p id="trackOrderTotal" style="color: #ff6b35; font-weight: bold; font-size: 1.1rem;"></p>
+                        </div>
+                        <div>
+                            <strong>Payment Method:</strong>
+                            <p id="trackPaymentMethod"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="color: #1e3a5f; margin-bottom: 1rem;">📍 Delivery Status</h4>
+                <div style="background: #f0f0f0; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>Current Status:</strong>
+                            <p id="trackDeliveryStatus" style="color: #ff6b35; font-size: 1.1rem; font-weight: bold;"></p>
+                        </div>
+                        <div>
+                            <strong>Tracking Number:</strong>
+                            <p id="trackTrackingNumber"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="color: #1e3a5f; margin-bottom: 1rem;">📋 Order Timeline</h4>
+                <div id="timelineContainer"></div>
+
+                <h4 style="color: #1e3a5f; margin-bottom: 1rem; margin-top: 2rem;">📦 Items in Order</h4>
+                <div id="trackOrderItems" style="background: #f9f9f9; border-radius: 8px; padding: 1rem;"></div>
+
+                <h4 style="color: #1e3a5f; margin-bottom: 1rem; margin-top: 2rem;">📍 Delivery Address</h4>
+                <div style="background: #f9f9f9; border-radius: 8px; padding: 1rem;">
+                    <p id="trackDeliveryAddress"></p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Home Section -->
     <section id="home" class="section">
@@ -1191,3 +1258,4 @@
     </script>
 </body>
 </html>
+<!-- Placeholder for tracking section to be added -->

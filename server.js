@@ -268,6 +268,44 @@ app.get('/api/products/search/:query', (req, res) => {
 });
 
 // ==================== ORDERS ====================
+// Get order tracking by order number
+app.get('/api/orders/track/:orderNumber', (req, res) => {
+  const { orderNumber } = req.params;
+  db.get('SELECT * FROM orders WHERE orderNumber = ?', [orderNumber], (err, order) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    
+    db.all('SELECT * FROM orderItems WHERE orderId = ?', [order.id], (err, items) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ ...order, items });
+    });
+  });
+});
+
+// Get all orders for a customer by email
+app.get('/api/orders/customer/:email', (req, res) => {
+  const { email } = req.params;
+  db.all('SELECT * FROM orders WHERE customerEmail = ? ORDER BY createdAt DESC', [email], (err, orders) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(orders);
+  });
+});
+
+// Update order delivery status (admin only)
+app.put('/api/orders/:id/status', (req, res) => {
+  const { id } = req.params;
+  const { deliveryStatus, trackingNumber } = req.body;
+  
+  db.run(
+    'UPDATE orders SET deliveryStatus = ?, trackingNumber = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
+    [deliveryStatus, trackingNumber, id],
+    function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true, message: 'Order status updated' });
+    }
+  );
+});
+
 app.post('/api/orders', (req, res) => {
   const { customerName, customerEmail, customerPhone, address, city, items, totalAmount, paymentMethod } = req.body;
   const orderNumber = 'ORD-' + Date.now();
