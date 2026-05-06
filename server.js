@@ -3,18 +3,26 @@ import cors from 'cors';
 import sqlite3 from 'sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Database setup
-const db = new sqlite3.Database(':memory:');
+const db = new sqlite3.Database(':memory:', (err) => {
+  if (err) console.error('Database connection error:', err);
+  else console.log('✓ Database initialized');
+});
 
 // Initialize database
 db.serialize(() => {
@@ -73,6 +81,87 @@ db.serialize(() => {
     FOREIGN KEY (productId) REFERENCES products(id)
   )`);
 
+  // Users table
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    name TEXT NOT NULL,
+    phone TEXT,
+    address TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Reviews table
+  db.run(`CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    productId INTEGER NOT NULL,
+    userId INTEGER,
+    rating INTEGER,
+    comment TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (productId) REFERENCES products(id)
+  )`);
+
+  // Wishlist table
+  db.run(`CREATE TABLE IF NOT EXISTS wishlist (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId INTEGER NOT NULL,
+    productId INTEGER NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (productId) REFERENCES products(id)
+  )`);
+
+  // Coupons table
+  db.run(`CREATE TABLE IF NOT EXISTS coupons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT UNIQUE NOT NULL,
+    discountPercent REAL,
+    discountAmount REAL,
+    maxUses INTEGER,
+    uses INTEGER DEFAULT 0,
+    expiryDate DATETIME,
+    active BOOLEAN DEFAULT 1
+  )`);
+
+  // Newsletter subscribers
+  db.run(`CREATE TABLE IF NOT EXISTS newsletter (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    subscribedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // POS transactions
+  db.run(`CREATE TABLE IF NOT EXISTS posTransactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transactionId TEXT UNIQUE NOT NULL,
+    items TEXT,
+    total REAL,
+    paymentMethod TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Testimonials
+  db.run(`CREATE TABLE IF NOT EXISTS testimonials (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT,
+    message TEXT,
+    rating INTEGER,
+    approved BOOLEAN DEFAULT 0,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Chat messages
+  db.run(`CREATE TABLE IF NOT EXISTS chatMessages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    visitorId TEXT,
+    message TEXT,
+    senderType TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   // Insert sample products
   const sampleProducts = [
     { name: 'Premium Yoga Leggings', description: 'High-quality yoga leggings with superior comfort', price: 89000, originalPrice: 120000, category: 'leggings', image: '🧘', stock: 15 },
@@ -107,9 +196,49 @@ db.serialize(() => {
   }
 });
 
-// API Routes
+// Email configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER || 'your-email@gmail.com',
+    pass: process.env.GMAIL_PASSWORD || 'your-app-password'
+  }
+});
 
-// Get all products
+// Authentication middleware
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.sendStatus(401);
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// ==================== AUTH ROUTES ====================
+app.post('/api/auth/register', (req, res) => {
+  const { email, password, name } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  db.run('INSERT INTO users (email, password, name) VALUES (?, ?, ?)', [email, hashedPassword, name], function(err) {
+    if (err) return res.status(400).json({ error: 'Email already exists' });
+    const token = jwt.sign({ id: this.lastID, email }, JWT_SECRET);
+    res.json({ token, user: { id: this.lastID, email, name } });
+  });
+});
+
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
+    if (err || !user) return res.status(400).json({ error: 'User not found' });
+    if (!bcrypt.compareSync(password, user.password)) return res.status(400).json({ error: 'Invalid password' });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
+    res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+  });
+});
+
+// ==================== PRODUCT ROUTES ====================
 app.get('/api/products', (req, res) => {
   db.all('SELECT * FROM products', (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -117,7 +246,6 @@ app.get('/api/products', (req, res) => {
   });
 });
 
-// Get product by ID with variants
 app.get('/api/products/:id', (req, res) => {
   const { id } = req.params;
   db.get('SELECT * FROM products WHERE id = ?', [id], (err, product) => {
@@ -131,7 +259,15 @@ app.get('/api/products/:id', (req, res) => {
   });
 });
 
-// Create order
+app.get('/api/products/search/:query', (req, res) => {
+  const query = `%${req.params.query}%`;
+  db.all('SELECT * FROM products WHERE name LIKE ? OR category LIKE ?', [query, query], (err, products) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(products);
+  });
+});
+
+// ==================== ORDERS ====================
 app.post('/api/orders', (req, res) => {
   const { customerName, customerEmail, customerPhone, address, city, items, totalAmount, paymentMethod } = req.body;
   const orderNumber = 'ORD-' + Date.now();
@@ -155,6 +291,14 @@ app.post('/api/orders', (req, res) => {
             if (err) console.error(err);
             itemsInserted++;
             if (itemsInserted === items.length) {
+              // Send email
+              transporter.sendMail({
+                from: process.env.GMAIL_USER || 'noreply@activewearpro.com',
+                to: customerEmail,
+                subject: `Order Confirmation - ${orderNumber}`,
+                html: `<h2>Thank you for your order!</h2><p>Order Number: ${orderNumber}</p><p>Total: ${totalAmount} Kyat</p>`
+              }).catch(err => console.error('Email error:', err));
+              
               res.json({ orderId, orderNumber, status: 'confirmed' });
             }
           }
@@ -164,7 +308,6 @@ app.post('/api/orders', (req, res) => {
   );
 });
 
-// Get order by ID
 app.get('/api/orders/:id', (req, res) => {
   const { id } = req.params;
   db.get('SELECT * FROM orders WHERE id = ?', [id], (err, order) => {
@@ -178,7 +321,6 @@ app.get('/api/orders/:id', (req, res) => {
   });
 });
 
-// Get order by order number
 app.get('/api/orders/track/:orderNumber', (req, res) => {
   const { orderNumber } = req.params;
   db.get('SELECT * FROM orders WHERE orderNumber = ?', [orderNumber], (err, order) => {
@@ -192,7 +334,6 @@ app.get('/api/orders/track/:orderNumber', (req, res) => {
   });
 });
 
-// Update order status
 app.put('/api/orders/:id/status', (req, res) => {
   const { id } = req.params;
   const { status, deliveryStatus, trackingNumber } = req.body;
@@ -207,11 +348,126 @@ app.put('/api/orders/:id/status', (req, res) => {
   );
 });
 
-// Get all orders (for admin)
 app.get('/api/admin/orders', (req, res) => {
   db.all('SELECT * FROM orders ORDER BY createdAt DESC', (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
+  });
+});
+
+// ==================== REVIEWS ====================
+app.post('/api/reviews', (req, res) => {
+  const { productId, rating, comment, userId } = req.body;
+  db.run('INSERT INTO reviews (productId, userId, rating, comment) VALUES (?, ?, ?, ?)', [productId, userId, rating, comment], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+app.get('/api/reviews/:productId', (req, res) => {
+  db.all('SELECT * FROM reviews WHERE productId = ?', [req.params.productId], (err, reviews) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(reviews);
+  });
+});
+
+// ==================== WISHLIST ====================
+app.post('/api/wishlist', authenticateToken, (req, res) => {
+  const { productId } = req.body;
+  db.run('INSERT OR IGNORE INTO wishlist (userId, productId) VALUES (?, ?)', [req.user.id, productId], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+app.get('/api/wishlist', authenticateToken, (req, res) => {
+  db.all('SELECT p.* FROM wishlist w JOIN products p ON w.productId = p.id WHERE w.userId = ?', [req.user.id], (err, items) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(items);
+  });
+});
+
+// ==================== COUPONS ====================
+app.post('/api/coupons/validate', (req, res) => {
+  const { code } = req.body;
+  db.get('SELECT * FROM coupons WHERE code = ? AND active = 1', [code], (err, coupon) => {
+    if (err || !coupon) return res.status(400).json({ error: 'Invalid coupon' });
+    res.json(coupon);
+  });
+});
+
+// ==================== NEWSLETTER ====================
+app.post('/api/newsletter/subscribe', (req, res) => {
+  const { email } = req.body;
+  db.run('INSERT OR IGNORE INTO newsletter (email) VALUES (?)', [email], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+// ==================== POS SYSTEM ====================
+app.post('/api/pos/transaction', (req, res) => {
+  const { items, total, paymentMethod } = req.body;
+  const transactionId = `POS-${Date.now()}`;
+  db.run('INSERT INTO posTransactions (transactionId, items, total, paymentMethod) VALUES (?, ?, ?, ?)', [transactionId, JSON.stringify(items), total, paymentMethod], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ transactionId, success: true });
+  });
+});
+
+// ==================== TESTIMONIALS ====================
+app.post('/api/testimonials', (req, res) => {
+  const { name, email, message, rating } = req.body;
+  db.run('INSERT INTO testimonials (name, email, message, rating) VALUES (?, ?, ?, ?)', [name, email, message, rating], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+app.get('/api/testimonials', (req, res) => {
+  db.all('SELECT * FROM testimonials WHERE approved = 1', (err, testimonials) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(testimonials);
+  });
+});
+
+// ==================== CHAT ====================
+app.post('/api/chat/send', (req, res) => {
+  const { visitorId, message } = req.body;
+  db.run('INSERT INTO chatMessages (visitorId, message, senderType) VALUES (?, ?, ?)', [visitorId, message, 'visitor'], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+app.get('/api/chat/:visitorId', (req, res) => {
+  db.all('SELECT * FROM chatMessages WHERE visitorId = ? ORDER BY createdAt', [req.params.visitorId], (err, messages) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(messages);
+  });
+});
+
+// ==================== ADMIN ROUTES ====================
+app.post('/api/admin/products', (req, res) => {
+  const { name, price, stock, category } = req.body;
+  db.run('INSERT INTO products (name, price, stock, category) VALUES (?, ?, ?, ?)', [name, price, stock, category], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ id: this.lastID, success: true });
+  });
+});
+
+app.put('/api/admin/products/:id', (req, res) => {
+  const { name, price, stock, category } = req.body;
+  db.run('UPDATE products SET name = ?, price = ?, stock = ?, category = ? WHERE id = ?', [name, price, stock, category, req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+app.get('/api/admin/inventory', (req, res) => {
+  db.all('SELECT id, name, stock, category FROM products', (err, products) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(products);
   });
 });
 
@@ -220,9 +476,14 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Activewear Pro API is running' });
 });
 
+// Serve index.html for all routes (SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✓ Activewear Pro API running on http://localhost:${PORT}`);
-  console.log(`✓ Products endpoint: http://localhost:${PORT}/api/products`);
-  console.log(`✓ Orders endpoint: http://localhost:${PORT}/api/orders`);
+  console.log(`✓ All 12 features + POS system enabled`);
+  console.log(`✓ Features: Auth, Reviews, Wishlist, Coupons, Newsletter, POS, Testimonials, Chat, Admin Dashboard`);
 });
