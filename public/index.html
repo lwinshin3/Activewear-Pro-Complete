@@ -38,6 +38,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .logo {
@@ -49,26 +51,36 @@
         nav {
             display: flex;
             gap: 2rem;
+            flex-wrap: wrap;
         }
 
-        nav a {
+        nav a, nav button {
             color: white;
             text-decoration: none;
             cursor: pointer;
             transition: opacity 0.3s;
+            background: none;
+            border: none;
+            font-size: 1rem;
         }
 
-        nav a:hover {
+        nav a:hover, nav button:hover {
             opacity: 0.8;
         }
 
-        .cart-icon {
+        .header-right {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .cart-icon, .user-icon {
             position: relative;
             cursor: pointer;
             font-size: 1.5rem;
         }
 
-        .cart-count {
+        .badge {
             position: absolute;
             top: -8px;
             right: -8px;
@@ -99,41 +111,41 @@
         .hero p {
             font-size: 1.2rem;
             margin-bottom: 2rem;
-            opacity: 0.9;
         }
 
         .btn {
             display: inline-block;
-            padding: 12px 30px;
+            padding: 0.75rem 1.5rem;
             background: #ff6b35;
             color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
             font-size: 1rem;
         }
 
         .btn:hover {
-            background: #e55a2b;
+            background: #e55a24;
         }
 
         .btn-secondary {
-            background: #1e3a5f;
+            background: white;
+            color: #1e3a5f;
         }
 
         .btn-secondary:hover {
-            background: #2d5a8c;
+            background: #f0f0f0;
         }
 
-        .section {
+        section {
             padding: 3rem 0;
         }
 
-        .section h2 {
+        .section-title {
             text-align: center;
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 2rem;
             color: #1e3a5f;
         }
@@ -142,7 +154,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 2rem;
-            margin-bottom: 2rem;
         }
 
         .product-card {
@@ -151,21 +162,16 @@
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s;
-            cursor: pointer;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .product-image {
-            width: 100%;
-            height: 250px;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: linear-gradient(135deg, #e8f0f7 0%, #f0f5fa 100%);
+            padding: 2rem;
+            text-align: center;
             font-size: 4rem;
         }
 
@@ -174,48 +180,43 @@
         }
 
         .product-name {
-            font-size: 1.1rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
             color: #1e3a5f;
         }
 
         .product-price {
-            font-size: 1.3rem;
             color: #ff6b35;
+            font-size: 1.3rem;
             font-weight: bold;
             margin-bottom: 1rem;
         }
 
-        .stock-status {
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+        .product-rating {
+            color: #ffc107;
+            margin-bottom: 0.5rem;
         }
 
-        .stock-status.in-stock {
-            color: #27ae60;
+        .product-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
 
-        .stock-status.out-of-stock {
-            color: #e74c3c;
-        }
-
-        .btn-view {
-            width: 100%;
-            padding: 10px;
-            background: #1e3a5f;
-            color: white;
-            border: none;
-            border-radius: 5px;
+        .product-buttons button {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            background: white;
             cursor: pointer;
-            transition: background 0.3s;
+            border-radius: 4px;
+            transition: all 0.3s;
         }
 
-        .btn-view:hover {
-            background: #2d5a8c;
+        .product-buttons button:hover {
+            background: #f0f0f0;
         }
 
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -225,11 +226,6 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
-            overflow-y: auto;
-        }
-
-        .modal.active {
-            display: block;
         }
 
         .modal-content {
@@ -239,7 +235,8 @@
             border-radius: 8px;
             width: 90%;
             max-width: 600px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .close {
@@ -251,847 +248,945 @@
         }
 
         .close:hover {
-            color: #000;
+            color: black;
         }
 
-        .product-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .product-details-image {
-            font-size: 6rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f0f0f0;
-            border-radius: 8px;
-        }
-
-        .product-details-info h2 {
-            color: #1e3a5f;
+        .form-group {
             margin-bottom: 1rem;
-            text-align: left;
         }
 
-        .product-details-info p {
-            color: #666;
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-
-        .size-selector, .color-selector {
-            margin-bottom: 1.5rem;
-        }
-
-        .size-selector label, .color-selector label {
+        label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: bold;
             color: #1e3a5f;
         }
 
-        .size-options, .color-options {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .size-option, .color-option {
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .size-option:hover, .color-option:hover {
-            border-color: #ff6b35;
-        }
-
-        .size-option.selected, .color-option.selected {
-            background: #ff6b35;
-            color: white;
-            border-color: #ff6b35;
-        }
-
-        .quantity-selector {
-            margin-bottom: 1.5rem;
-        }
-
-        .quantity-selector label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #1e3a5f;
-        }
-
-        .quantity-input {
-            padding: 8px;
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 80px;
+            border-radius: 4px;
             font-size: 1rem;
         }
 
-        /* Cart Styles */
-        .cart-panel {
-            display: none;
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 400px;
-            height: 100%;
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .cart-items {
             background: white;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.2);
-            z-index: 999;
-            overflow-y: auto;
+            border-radius: 8px;
             padding: 2rem;
-        }
-
-        .cart-panel.active {
-            display: block;
-        }
-
-        .cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 2rem;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 1rem;
-        }
-
-        .cart-header h2 {
-            color: #1e3a5f;
         }
 
         .cart-item {
-            border-bottom: 1px solid #f0f0f0;
-            padding: 1rem 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .cart-item-details {
-            flex: 1;
-        }
-
-        .cart-item-name {
-            font-weight: bold;
-            color: #1e3a5f;
-            margin-bottom: 0.5rem;
-        }
-
-        .cart-item-meta {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 0.5rem;
-        }
-
-        .cart-item-price {
-            color: #ff6b35;
-            font-weight: bold;
-        }
-
-        .cart-item-remove {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .cart-total {
-            background: #f0f0f0;
             padding: 1rem;
-            border-radius: 5px;
-            margin: 2rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
             text-align: right;
         }
 
-        .cart-total-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .cart-total-amount {
-            font-size: 1.5rem;
-            color: #ff6b35;
-            font-weight: bold;
-        }
-
-        .cart-actions {
+        .summary-row {
             display: flex;
-            gap: 1rem;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
         }
 
-        .cart-actions button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
+        .summary-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b35;
+            border-top: 2px solid #eee;
+            padding-top: 1rem;
+        }
+
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+        }
+
+        .chat-header {
+            background: #1e3a5f;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
             font-weight: bold;
         }
 
-        .btn-checkout {
-            background: #ff6b35;
-            color: white;
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
         }
 
-        .btn-checkout:hover {
-            background: #e55a2b;
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 0.5rem;
         }
 
-        .btn-continue {
+        .chat-input input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .testimonials {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .testimonial {
+            padding: 1.5rem;
+            border-left: 4px solid #ff6b35;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-author {
+            font-weight: bold;
+            color: #1e3a5f;
+        }
+
+        .testimonial-rating {
+            color: #ffc107;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-section {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-table th {
             background: #1e3a5f;
             color: white;
         }
 
-        .btn-continue:hover {
-            background: #2d5a8c;
-        }
-
-        /* Checkout Styles */
-        .checkout-form {
+        .pos-terminal {
             background: white;
+            border-radius: 8px;
             padding: 2rem;
-            border-radius: 8px;
-            max-width: 600px;
-            margin: 2rem auto;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #1e3a5f;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .order-summary {
-            background: #f9f9f9;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
-
-        .order-summary h3 {
-            color: #1e3a5f;
-            margin-bottom: 1rem;
-        }
-
-        .summary-item {
+        .pos-item {
             display: flex;
             justify-content: space-between;
+            padding: 1rem;
+            border: 1px solid #eee;
             margin-bottom: 0.5rem;
-        }
-
-        .summary-total {
-            border-top: 2px solid #ddd;
-            padding-top: 1rem;
-            margin-top: 1rem;
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            color: #ff6b35;
-        }
-
-        /* Contact Section */
-        .contact-section {
-            background: #f9f9f9;
-            padding: 3rem 0;
-        }
-
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .contact-item {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .contact-item h3 {
-            color: #1e3a5f;
-            margin-bottom: 1rem;
-        }
-
-        .contact-item a {
-            color: #ff6b35;
-            text-decoration: none;
-        }
-
-        .contact-item a:hover {
-            text-decoration: underline;
+            border-radius: 4px;
         }
 
         footer {
             background: #1e3a5f;
             color: white;
-            text-align: center;
             padding: 2rem 0;
             margin-top: 3rem;
         }
 
-        .success-message {
-            background: #27ae60;
-            color: white;
-            padding: 1rem;
-            border-radius: 5px;
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
             margin-bottom: 1rem;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #ccc;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+        }
+
+        .hidden {
             display: none;
         }
 
-        .success-message.active {
-            display: block;
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
 
         @media (max-width: 768px) {
-            nav {
-                gap: 1rem;
-                font-size: 0.9rem;
-            }
-
             .hero h1 {
                 font-size: 2rem;
             }
 
-            .cart-panel {
+            nav {
+                gap: 1rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .chat-widget {
                 width: 100%;
-            }
-
-            .product-details {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                width: 95%;
+                height: 100%;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header>
         <div class="container">
-            <div class="logo">ACTIVEWEAR PRO</div>
+            <div class="logo">🏋️ Activewear Pro</div>
             <nav>
+                <a onclick="showSection('home')">Home</a>
                 <a onclick="showSection('shop')">Shop</a>
                 <a onclick="showSection('about')">About</a>
                 <a onclick="showSection('contact')">Contact</a>
-                <a onclick="showSection('track')">Track Order</a>
-                <div class="cart-icon" onclick="toggleCart()">
-                    🛒
-                    <span class="cart-count" id="cartCount">0</span>
-                </div>
+                <a onclick="showSection('admin')">Admin</a>
+                <a onclick="showSection('pos')">POS</a>
             </nav>
+            <div class="header-right">
+                <div class="user-icon" onclick="showLoginModal()">👤
+                    <span class="badge" id="userBadge" style="display:none;">✓</span>
+                </div>
+                <div class="cart-icon" onclick="showSection('cart')">🛒
+                    <span class="badge" id="cartBadge">0</span>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Cart Panel -->
-    <div class="cart-panel" id="cartPanel">
-        <div class="cart-header">
-            <h2>Shopping Cart</h2>
-            <span class="close" onclick="toggleCart()">&times;</span>
-        </div>
-        <div id="cartItems"></div>
-        <div class="cart-total">
-            <div class="cart-total-label">Total:</div>
-            <div class="cart-total-amount">₭<span id="cartTotal">0</span></div>
-        </div>
-        <div class="cart-actions">
-            <button class="btn-checkout" onclick="goToCheckout()">Checkout</button>
-            <button class="btn-continue" onclick="toggleCart()">Continue Shopping</button>
-        </div>
-    </div>
-
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container">
-            <h1>Premium Myanmar Activewear</h1>
-            <p>Designed for comfort, style, and performance</p>
-            <a onclick="showSection('shop')" class="btn">Shop Now</a>
+    <!-- Home Section -->
+    <section id="home" class="section">
+        <div class="hero">
+            <h1>Premium Activewear for Myanmar</h1>
+            <p>Quality, Style, and Performance</p>
+            <button class="btn" onclick="showSection('shop')">Shop Now</button>
         </div>
     </section>
 
     <!-- Shop Section -->
-    <section class="section" id="shop" style="display: none;">
+    <section id="shop" class="section hidden">
         <div class="container">
-            <h2>Our Collection</h2>
-            <div class="products-grid" id="productsGrid"></div>
+            <h2 class="section-title">Our Collection</h2>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <button class="btn" onclick="searchProducts()">Search</button>
+            </div>
+
+            <div id="productsContainer" class="products-grid"></div>
         </div>
     </section>
 
-    <!-- Product Detail Modal -->
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeProductModal()">&times;</span>
-            <div class="product-details">
-                <div class="product-details-image" id="modalProductImage"></div>
-                <div class="product-details-info">
-                    <h2 id="modalProductName"></h2>
-                    <p id="modalProductDescription"></p>
-                    <div style="font-size: 1.3rem; color: #ff6b35; font-weight: bold; margin-bottom: 1rem;">
-                        ₭<span id="modalProductPrice"></span>
-                    </div>
-                    <div class="size-selector">
-                        <label>Size:</label>
-                        <div class="size-options" id="sizeOptions"></div>
-                    </div>
-                    <div class="color-selector">
-                        <label>Color:</label>
-                        <div class="color-options" id="colorOptions"></div>
-                    </div>
-                    <div class="quantity-selector">
-                        <label>Quantity:</label>
-                        <input type="number" id="quantityInput" class="quantity-input" value="1" min="1" max="10">
-                    </div>
-                    <button class="btn" onclick="addToCart()" style="width: 100%;">Add to Cart</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Checkout Section -->
-    <section class="section" id="checkout" style="display: none;">
+    <!-- Cart Section -->
+    <section id="cart" class="section hidden">
         <div class="container">
-            <h2>Checkout</h2>
-            <div class="checkout-form">
-                <div class="success-message" id="successMessage">
-                    ✓ Order placed successfully! Your order number is: <strong id="orderNumber"></strong>
-                </div>
-                <div class="order-summary" id="checkoutSummary"></div>
-                <form onsubmit="submitOrder(event)">
-                    <div class="form-group">
-                        <label>Full Name *</label>
-                        <input type="text" id="customerName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="customerEmail">
-                    </div>
-                    <div class="form-group">
-                        <label>Phone Number *</label>
-                        <input type="tel" id="customerPhone" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Address *</label>
-                        <textarea id="customerAddress" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>City *</label>
-                        <input type="text" id="customerCity" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Payment Method *</label>
-                        <select id="paymentMethod" required>
-                            <option value="">Select payment method</option>
-                            <option value="cash">Cash on Delivery</option>
-                            <option value="bank">Bank Transfer</option>
-                            <option value="card">Credit/Debit Card</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn" style="width: 100%;">Place Order</button>
-                </form>
+            <h2 class="section-title">Shopping Cart</h2>
+            <div class="cart-items" id="cartContainer">
+                <p style="text-align: center; color: #999;">Your cart is empty</p>
             </div>
-        </div>
-    </section>
-
-    <!-- Track Order Section -->
-    <section class="section" id="track" style="display: none;">
-        <div class="container">
-            <h2>Track Your Order</h2>
-            <div class="checkout-form">
-                <div class="form-group">
-                    <label>Order Number *</label>
-                    <input type="text" id="trackingOrderNumber" placeholder="e.g., ORD-1234567890">
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">0 Kyat</span>
                 </div>
-                <button class="btn" onclick="trackOrder()" style="width: 100%;">Track Order</button>
-                <div id="trackingResult" style="margin-top: 2rem;"></div>
+                <div class="summary-row">
+                    <span>Coupon Discount:</span>
+                    <span id="discount">0 Kyat</span>
+                </div>
+                <div class="summary-row">
+                    <input type="text" id="couponCode" placeholder="Enter coupon code" style="width: 60%; margin: 0;">
+                    <button class="btn" onclick="applyCoupon()" style="width: 35%; margin: 0;">Apply</button>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total:</span>
+                    <span id="total">0 Kyat</span>
+                </div>
+                <button class="btn" onclick="showCheckoutModal()" style="width: 100%; margin-top: 1rem;">Proceed to Checkout</button>
             </div>
         </div>
     </section>
 
     <!-- About Section -->
-    <section class="section" id="about" style="display: none;">
+    <section id="about" class="section hidden">
         <div class="container">
-            <h2>About Activewear Pro</h2>
-            <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 800px; margin: 0 auto;">
-                <h3 style="color: #1e3a5f; margin-bottom: 1rem;">Who We Are</h3>
-                <p style="margin-bottom: 1rem; line-height: 1.8;">Activewear Pro is Myanmar's leading premium activewear brand, dedicated to providing high-quality, stylish, and comfortable athletic wear for the modern lifestyle.</p>
-                <p style="margin-bottom: 2rem; line-height: 1.8;">Founded with a passion for fitness and fashion, we believe that everyone deserves to feel confident and comfortable during their active pursuits.</p>
+            <h2 class="section-title">About Activewear Pro</h2>
+            <div style="background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+                <h3 style="color: #1e3a5f; margin-bottom: 1rem;">Our Mission</h3>
+                <p style="margin-bottom: 1rem;">To provide premium, affordable activewear that empowers Myanmar's fitness community to achieve their goals with confidence and style.</p>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                    <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #ff6b35;">
-                        <h4 style="color: #1e3a5f; margin-bottom: 1rem;">Our Mission</h4>
-                        <p>To empower individuals through premium activewear that combines style, comfort, and performance.</p>
-                    </div>
-                    <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #ff6b35;">
-                        <h4 style="color: #1e3a5f; margin-bottom: 1rem;">Our Vision</h4>
-                        <p>To be Myanmar's most trusted and recognized premium activewear brand.</p>
-                    </div>
-                </div>
+                <h3 style="color: #1e3a5f; margin-bottom: 1rem;">Our Vision</h3>
+                <p style="margin-bottom: 1rem;">To become Myanmar's leading activewear brand, recognized for quality, innovation, and customer excellence.</p>
+
+                <h3 style="color: #1e3a5f; margin-bottom: 1rem;">Why Choose Us?</h3>
+                <ul style="margin-left: 2rem;">
+                    <li>Premium quality materials</li>
+                    <li>Affordable prices</li>
+                    <li>Fast delivery</li>
+                    <li>Excellent customer service</li>
+                    <li>Wide variety of styles</li>
+                </ul>
             </div>
+
+            <h2 class="section-title">Customer Testimonials</h2>
+            <div id="testimonialsContainer"></div>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section class="contact-section" id="contact" style="display: none;">
-        <div class="container section">
-            <h2>Contact Us</h2>
-            <div class="contact-info">
-                <div class="contact-item">
-                    <h3>📞 Phone</h3>
-                    <p><a href="tel:+95912345678">+959 123 456 78</a></p>
-                    <p><a href="tel:+95987654321">+959 876 543 21</a></p>
-                </div>
-                <div class="contact-item">
-                    <h3>📍 Address</h3>
+    <section id="contact" class="section hidden">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div style="background: white; padding: 2rem; border-radius: 8px;">
+                    <h3 style="color: #1e3a5f; margin-bottom: 1rem;">📍 Address</h3>
                     <p>Yangon, Myanmar</p>
+                    
+                    <h3 style="color: #1e3a5f; margin-bottom: 1rem; margin-top: 1.5rem;">📞 Phone</h3>
+                    <p><a href="tel:+959123456789" style="color: #ff6b35; text-decoration: none;">+959 123 456 789</a></p>
+                    
+                    <h3 style="color: #1e3a5f; margin-bottom: 1rem; margin-top: 1.5rem;">📧 Email</h3>
+                    <p><a href="mailto:info@activewearpro.com" style="color: #ff6b35; text-decoration: none;">info@activewearpro.com</a></p>
+                    
+                    <h3 style="color: #1e3a5f; margin-bottom: 1rem; margin-top: 1.5rem;">📱 Facebook</h3>
+                    <p><a href="https://facebook.com/activewearpro2020" target="_blank" style="color: #ff6b35; text-decoration: none;">Activewear Pro</a></p>
                 </div>
-                <div class="contact-item">
-                    <h3>📧 Email</h3>
-                    <p><a href="mailto:info@activewearpro.com">info@activewearpro.com</a></p>
-                </div>
-                <div class="contact-item">
-                    <h3>👍 Follow Us</h3>
-                    <p><a href="https://www.facebook.com/activewearpro2020" target="_blank">Facebook Page</a></p>
+                <div style="background: white; padding: 2rem; border-radius: 8px;">
+                    <h3 style="color: #1e3a5f; margin-bottom: 1rem;">Send us a Message</h3>
+                    <form onsubmit="sendMessage(event)">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Admin Dashboard -->
+    <section id="admin" class="section hidden">
+        <div class="container">
+            <h2 class="section-title">Admin Dashboard</h2>
+            
+            <div class="admin-section">
+                <h3 style="color: #1e3a5f; margin-bottom: 1rem;">📦 Inventory Management</h3>
+                <table class="admin-table" id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryBody"></tbody>
+                </table>
+            </div>
+
+            <div class="admin-section" style="margin-top: 2rem;">
+                <h3 style="color: #1e3a5f; margin-bottom: 1rem;">📋 Recent Orders</h3>
+                <table class="admin-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- POS System -->
+    <section id="pos" class="section hidden">
+        <div class="container">
+            <h2 class="section-title">POS System</h2>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                <div class="pos-terminal">
+                    <h3 style="color: #1e3a5f; margin-bottom: 1rem;">🛍️ Add Items</h3>
+                    <div class="search-bar">
+                        <input type="text" id="posSearch" placeholder="Search product...">
+                        <button class="btn" onclick="searchPOSProducts()">Search</button>
+                    </div>
+                    <div id="posProductsContainer" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
+                
+                <div class="pos-terminal">
+                    <h3 style="color: #1e3a5f; margin-bottom: 1rem;">💳 Transaction</h3>
+                    <div id="posCartContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 1rem;"></div>
+                    <div style="background: #f0f0f0; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Total:</span>
+                            <span style="font-weight: bold; font-size: 1.3rem;" id="posTotal">0 Kyat</span>
+                        </div>
+                    </div>
+                    <select id="posPaymentMethod" style="margin-bottom: 1rem;">
+                        <option>Cash</option>
+                        <option>Bank Transfer</option>
+                        <option>Card</option>
+                    </select>
+                    <button class="btn" onclick="completePOSTransaction()" style="width: 100%;">Complete Sale</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Chat Widget -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header">💬 Customer Support</div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Type a message...">
+            <button class="btn" onclick="sendChatMessage()" style="padding: 0.5rem 1rem;">Send</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2 style="color: #1e3a5f; margin-bottom: 1.5rem;">Login / Register</h2>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                <button class="btn" onclick="showLoginForm()" style="flex: 1;">Login</button>
+                <button class="btn btn-secondary" onclick="showRegisterForm()" style="flex: 1;">Register</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="authEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="authPassword" required>
+                </div>
+                <div class="form-group" id="nameGroup" style="display: none;">
+                    <label>Full Name</label>
+                    <input type="text" id="authName">
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCheckoutModal()">&times;</span>
+            <h2 style="color: #1e3a5f; margin-bottom: 1.5rem;">Checkout</h2>
+            <form onsubmit="completeCheckout(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select required>
+                        <option>Cash on Delivery</option>
+                        <option>Bank Transfer</option>
+                        <option>Credit Card</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2026 Activewear Pro. All rights reserved. | Premium Myanmar Activewear</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <a href="#">About Us</a>
+                    <a href="#">Our Story</a>
+                    <a href="#">Careers</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <a href="#">Contact Us</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Shipping Info</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <a href="https://facebook.com/activewearpro2020">Facebook</a>
+                    <a href="#">Instagram</a>
+                    <a href="#">Twitter</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p style="margin-bottom: 1rem;">Subscribe for updates</p>
+                    <input type="email" id="newsletterEmail" placeholder="Your email" style="margin-bottom: 0.5rem;">
+                    <button class="btn" onclick="subscribeNewsletter()" style="width: 100%;">Subscribe</button>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Activewear Pro. All rights reserved. | Premium Activewear for Myanmar</p>
+            </div>
         </div>
     </footer>
 
     <script>
         const API_URL = '/api';
         let cart = [];
-        let currentProduct = null;
-        let selectedSize = null;
-        let selectedColor = null;
+        let products = [];
+        let currentUser = null;
+        let posCart = [];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadProducts();
-            loadCart();
+            loadTestimonials();
+            loadInventory();
+            loadOrders();
         });
 
-        // Load products
+        // Load Products
         async function loadProducts() {
             try {
                 const response = await fetch(`${API_URL}/products`);
-                const products = await response.json();
-                renderProducts(products);
+                products = await response.json();
+                displayProducts(products);
             } catch (error) {
                 console.error('Error loading products:', error);
             }
         }
 
-        // Render products
-        function renderProducts(products) {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = products.map(product => `
-                <div class="product-card" onclick="openProductModal(${product.id})">
-                    <div class="product-image">${product.image}</div>
+        function displayProducts(items) {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = items.map(product => `
+                <div class="product-card">
+                    <div class="product-image">${product.image || '👕'}</div>
                     <div class="product-info">
                         <div class="product-name">${product.name}</div>
-                        <div class="product-price">
-                            ₭${product.price.toLocaleString()}
-                            ${product.originalPrice ? `<span style="text-decoration: line-through; font-size: 0.9rem; color: #999; margin-left: 10px;">₭${product.originalPrice.toLocaleString()}</span>` : ''}
+                        <div class="product-price">${product.price} Kyat</div>
+                        <div class="product-rating">⭐⭐⭐⭐⭐</div>
+                        <div class="product-buttons">
+                            <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})">🛒 Add</button>
+                            <button onclick="addToWishlist(${product.id})">❤️</button>
+                            <button onclick="viewReviews(${product.id})">💬</button>
                         </div>
-                        <div class="stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
-                            ${product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-                        </div>
-                        <button class="btn-view">View Details</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Open product modal
-        async function openProductModal(productId) {
-            try {
-                const response = await fetch(`${API_URL}/products/${productId}`);
-                const product = await response.json();
-                currentProduct = product;
-                selectedSize = null;
-                selectedColor = null;
-
-                document.getElementById('modalProductName').textContent = product.name;
-                document.getElementById('modalProductDescription').textContent = product.description || 'Premium activewear';
-                document.getElementById('modalProductPrice').textContent = product.price.toLocaleString();
-                document.getElementById('modalProductImage').textContent = product.image;
-                document.getElementById('quantityInput').value = 1;
-
-                // Get unique sizes and colors
-                const sizes = [...new Set(product.variants.map(v => v.size))];
-                const colors = [...new Set(product.variants.map(v => v.color))];
-
-                document.getElementById('sizeOptions').innerHTML = sizes.map(size => 
-                    `<button type="button" class="size-option" onclick="selectSize('${size}')">${size}</button>`
-                ).join('');
-
-                document.getElementById('colorOptions').innerHTML = colors.map(color => 
-                    `<button type="button" class="color-option" onclick="selectColor('${color}')">${color}</button>`
-                ).join('');
-
-                document.getElementById('productModal').classList.add('active');
-            } catch (error) {
-                console.error('Error loading product:', error);
-            }
+        // Cart Functions
+        function addToCart(productId, name, price) {
+            cart.push({ productId, name, price, quantity: 1 });
+            updateCartBadge();
+            updateCartDisplay();
+            alert('Added to cart!');
         }
 
-        function selectSize(size) {
-            selectedSize = size;
-            document.querySelectorAll('.size-option').forEach(btn => btn.classList.remove('selected'));
-            event.target.classList.add('selected');
+        function updateCartBadge() {
+            document.getElementById('cartBadge').textContent = cart.length;
         }
 
-        function selectColor(color) {
-            selectedColor = color;
-            document.querySelectorAll('.color-option').forEach(btn => btn.classList.remove('selected'));
-            event.target.classList.add('selected');
-        }
-
-        function closeProductModal() {
-            document.getElementById('productModal').classList.remove('active');
-        }
-
-        // Add to cart
-        function addToCart() {
-            if (!currentProduct) return;
-            
-            const quantity = parseInt(document.getElementById('quantityInput').value);
-            const cartItem = {
-                productId: currentProduct.id,
-                productName: currentProduct.name,
-                price: currentProduct.price,
-                quantity: quantity,
-                size: selectedSize || 'One Size',
-                color: selectedColor || 'Default'
-            };
-
-            cart.push(cartItem);
-            saveCart();
-            updateCartUI();
-            closeProductModal();
-            alert(`${currentProduct.name} added to cart!`);
-        }
-
-        // Toggle cart
-        function toggleCart() {
-            document.getElementById('cartPanel').classList.toggle('active');
-        }
-
-        // Update cart UI
-        function updateCartUI() {
-            const cartCount = cart.length;
-            document.getElementById('cartCount').textContent = cartCount;
-
-            const cartItemsDiv = document.getElementById('cartItems');
+        function updateCartDisplay() {
+            const container = document.getElementById('cartContainer');
             if (cart.length === 0) {
-                cartItemsDiv.innerHTML = '<p style="text-align: center; color: #999;">Your cart is empty</p>';
-            } else {
-                cartItemsDiv.innerHTML = cart.map((item, index) => `
-                    <div class="cart-item">
-                        <div class="cart-item-details">
-                            <div class="cart-item-name">${item.productName}</div>
-                            <div class="cart-item-meta">Size: ${item.size} | Color: ${item.color}</div>
-                            <div class="cart-item-meta">Qty: ${item.quantity}</div>
-                            <div class="cart-item-price">₭${(item.price * item.quantity).toLocaleString()}</div>
-                        </div>
-                        <button class="cart-item-remove" onclick="removeFromCart(${index})">Remove</button>
-                    </div>
-                `).join('');
+                container.innerHTML = '<p style="text-align: center; color: #999;">Your cart is empty</p>';
+                return;
             }
 
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            document.getElementById('cartTotal').textContent = total.toLocaleString();
+            let subtotal = 0;
+            container.innerHTML = cart.map((item, index) => {
+                subtotal += item.price * item.quantity;
+                return `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            ${item.price} Kyat x ${item.quantity}
+                        </div>
+                        <div>
+                            <button onclick="removeFromCart(${index})" class="btn" style="padding: 0.3rem 0.6rem;">Remove</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('subtotal').textContent = subtotal + ' Kyat';
+            document.getElementById('total').textContent = subtotal + ' Kyat';
         }
 
-        // Remove from cart
         function removeFromCart(index) {
             cart.splice(index, 1);
-            saveCart();
-            updateCartUI();
+            updateCartBadge();
+            updateCartDisplay();
         }
 
-        // Save cart to localStorage
-        function saveCart() {
-            localStorage.setItem('cart', JSON.stringify(cart));
+        // Search
+        function searchProducts() {
+            const query = document.getElementById('searchInput').value;
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(query.toLowerCase()) ||
+                p.category.toLowerCase().includes(query.toLowerCase())
+            );
+            displayProducts(filtered);
         }
 
-        // Load cart from localStorage
-        function loadCart() {
-            const saved = localStorage.getItem('cart');
-            if (saved) {
-                cart = JSON.parse(saved);
-                updateCartUI();
-            }
-        }
-
-        // Go to checkout
-        function goToCheckout() {
+        // Checkout
+        function showCheckoutModal() {
             if (cart.length === 0) {
                 alert('Your cart is empty!');
                 return;
             }
-            showSection('checkout');
-            renderCheckoutSummary();
-            toggleCart();
+            document.getElementById('checkoutModal').style.display = 'block';
         }
 
-        // Render checkout summary
-        function renderCheckoutSummary() {
-            const summary = document.getElementById('checkoutSummary');
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            
-            summary.innerHTML = `
-                ${cart.map(item => `
-                    <div class="summary-item">
-                        <span>${item.productName} x${item.quantity} (${item.size}, ${item.color})</span>
-                        <span>₭${(item.price * item.quantity).toLocaleString()}</span>
-                    </div>
-                `).join('')}
-                <div class="summary-total">
-                    <span>Total:</span>
-                    <span>₭${total.toLocaleString()}</span>
-                </div>
-            `;
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').style.display = 'none';
         }
 
-        // Submit order
-        async function submitOrder(event) {
+        async function completeCheckout(event) {
             event.preventDefault();
-
-            const orderData = {
-                customerName: document.getElementById('customerName').value,
-                customerEmail: document.getElementById('customerEmail').value,
-                customerPhone: document.getElementById('customerPhone').value,
-                address: document.getElementById('customerAddress').value,
-                city: document.getElementById('customerCity').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                items: cart,
-                totalAmount: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-            };
+            const form = event.target;
+            const total = document.getElementById('total').textContent.replace(' Kyat', '');
 
             try {
                 const response = await fetch(`${API_URL}/orders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
+                    body: JSON.stringify({
+                        customerName: form.elements[0].value,
+                        customerEmail: form.elements[1].value,
+                        customerPhone: form.elements[2].value,
+                        address: form.elements[3].value,
+                        city: form.elements[4].value,
+                        items: cart,
+                        totalAmount: total,
+                        paymentMethod: form.elements[5].value
+                    })
                 });
 
                 const result = await response.json();
-                
-                if (result.orderNumber) {
-                    document.getElementById('orderNumber').textContent = result.orderNumber;
-                    document.getElementById('successMessage').classList.add('active');
-                    
-                    // Clear cart
-                    cart = [];
-                    saveCart();
-                    updateCartUI();
-
-                    // Reset form
-                    event.target.reset();
-
-                    // Scroll to message
-                    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
-
-                    setTimeout(() => {
-                        showSection('shop');
-                    }, 3000);
-                }
+                alert(`Order placed successfully! Order #: ${result.orderNumber}`);
+                cart = [];
+                updateCartBadge();
+                updateCartDisplay();
+                closeCheckoutModal();
+                showSection('home');
             } catch (error) {
-                alert('Error placing order: ' + error.message);
+                console.error('Error:', error);
+                alert('Error placing order');
             }
         }
 
-        // Track order
-        async function trackOrder() {
-            const orderNumber = document.getElementById('trackingOrderNumber').value;
-            if (!orderNumber) {
-                alert('Please enter an order number');
+        // Auth
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function showLoginForm() {
+            document.getElementById('nameGroup').style.display = 'none';
+            document.getElementById('authForm').onsubmit = handleAuth;
+        }
+
+        function showRegisterForm() {
+            document.getElementById('nameGroup').style.display = 'block';
+            document.getElementById('authForm').onsubmit = handleAuth;
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const name = document.getElementById('authName').value;
+
+            // Simulate auth
+            currentUser = { email, name };
+            document.getElementById('userBadge').style.display = 'flex';
+            closeLoginModal();
+            alert('Logged in successfully!');
+        }
+
+        // Wishlist
+        function addToWishlist(productId) {
+            alert('Added to wishlist!');
+        }
+
+        // Reviews
+        function viewReviews(productId) {
+            alert('Reviews for this product:\n⭐⭐⭐⭐⭐ Great quality!\n⭐⭐⭐⭐ Good value');
+        }
+
+        // Testimonials
+        async function loadTestimonials() {
+            const container = document.getElementById('testimonialsContainer');
+            const testimonials = [
+                { name: 'Aung', rating: 5, message: 'Best activewear in Myanmar! Highly recommended.' },
+                { name: 'Mya', rating: 5, message: 'Great quality and fast delivery. Will buy again!' },
+                { name: 'Kyaw', rating: 4, message: 'Good products, excellent customer service.' }
+            ];
+
+            container.innerHTML = testimonials.map(t => `
+                <div class="testimonials">
+                    <div class="testimonial-rating">${'⭐'.repeat(t.rating)}</div>
+                    <p>${t.message}</p>
+                    <div class="testimonial-author">- ${t.name}</div>
+                </div>
+            `).join('');
+        }
+
+        // Newsletter
+        function subscribeNewsletter() {
+            const email = document.getElementById('newsletterEmail').value;
+            if (email) {
+                alert('Subscribed successfully!');
+                document.getElementById('newsletterEmail').value = '';
+            }
+        }
+
+        // Coupon
+        function applyCoupon() {
+            const code = document.getElementById('couponCode').value;
+            if (code === 'SAVE10') {
+                document.getElementById('discount').textContent = '10% off';
+                alert('Coupon applied!');
+            } else {
+                alert('Invalid coupon code');
+            }
+        }
+
+        // Admin
+        async function loadInventory() {
+            try {
+                const response = await fetch(`${API_URL}/admin/inventory`);
+                const inventory = await response.json();
+                const tbody = document.getElementById('inventoryBody');
+                tbody.innerHTML = inventory.slice(0, 5).map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.stock}</td>
+                        <td>${item.price || 'N/A'}</td>
+                        <td><button class="btn" onclick="editProduct(${item.id})">Edit</button></td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading inventory:', error);
+            }
+        }
+
+        async function loadOrders() {
+            try {
+                const response = await fetch(`${API_URL}/admin/orders`);
+                const orders = await response.json();
+                const tbody = document.getElementById('ordersBody');
+                tbody.innerHTML = orders.slice(0, 5).map(order => `
+                    <tr>
+                        <td>${order.orderNumber}</td>
+                        <td>${order.customerName}</td>
+                        <td>${order.totalAmount} Kyat</td>
+                        <td>${order.deliveryStatus}</td>
+                        <td><button class="btn" onclick="updateOrderStatus(${order.id})">Update</button></td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+
+        // POS
+        function searchPOSProducts() {
+            const query = document.getElementById('posSearch').value;
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(query.toLowerCase())
+            );
+            displayPOSProducts(filtered);
+        }
+
+        function displayPOSProducts(items) {
+            const container = document.getElementById('posProductsContainer');
+            container.innerHTML = items.map(product => `
+                <div class="pos-item">
+                    <div>${product.name}</div>
+                    <button class="btn" onclick="addToPOSCart(${product.id}, '${product.name}', ${product.price})" style="padding: 0.3rem 0.6rem;">Add</button>
+                </div>
+            `).join('');
+        }
+
+        function addToPOSCart(productId, name, price) {
+            posCart.push({ productId, name, price, quantity: 1 });
+            updatePOSDisplay();
+        }
+
+        function updatePOSDisplay() {
+            const container = document.getElementById('posCartContainer');
+            let total = 0;
+            container.innerHTML = posCart.map((item, index) => {
+                total += item.price * item.quantity;
+                return `
+                    <div class="pos-item">
+                        <div>${item.name} x${item.quantity}</div>
+                        <div>${item.price * item.quantity} Kyat</div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('posTotal').textContent = total + ' Kyat';
+        }
+
+        async function completePOSTransaction() {
+            if (posCart.length === 0) {
+                alert('Cart is empty!');
                 return;
             }
 
+            const total = document.getElementById('posTotal').textContent.replace(' Kyat', '');
+            const paymentMethod = document.getElementById('posPaymentMethod').value;
+
             try {
-                const response = await fetch(`${API_URL}/orders/track/${orderNumber}`);
-                const order = await response.json();
+                const response = await fetch(`${API_URL}/pos/transaction`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: posCart, total, paymentMethod })
+                });
 
-                if (order.error) {
-                    document.getElementById('trackingResult').innerHTML = `<p style="color: #e74c3c;">Order not found</p>`;
-                } else {
-                    const statusColors = {
-                        'processing': '#ff9800',
-                        'shipped': '#2196F3',
-                        'delivered': '#27ae60',
-                        'cancelled': '#e74c3c'
-                    };
-
-                    document.getElementById('trackingResult').innerHTML = `
-                        <div style="background: #f9f9f9; padding: 2rem; border-radius: 8px;">
-                            <h3 style="color: #1e3a5f; margin-bottom: 1rem;">Order Details</h3>
-                            <p><strong>Order Number:</strong> ${order.orderNumber}</p>
-                            <p><strong>Customer:</strong> ${order.customerName}</p>
-                            <p><strong>Total Amount:</strong> ₭${order.totalAmount.toLocaleString()}</p>
-                            <p><strong>Status:</strong> <span style="color: ${statusColors[order.status] || '#999'}; font-weight: bold;">${order.status.toUpperCase()}</span></p>
-                            <p><strong>Delivery Status:</strong> <span style="color: ${statusColors[order.deliveryStatus] || '#999'}; font-weight: bold;">${order.deliveryStatus.toUpperCase()}</span></p>
-                            ${order.trackingNumber ? `<p><strong>Tracking Number:</strong> ${order.trackingNumber}</p>` : ''}
-                            <p><strong>Ordered:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
-                            <hr style="margin: 1rem 0;">
-                            <h4 style="color: #1e3a5f; margin-bottom: 1rem;">Items:</h4>
-                            ${order.items.map(item => `
-                                <p>• ${item.productName} x${item.quantity} (${item.size}, ${item.color}) - ₭${(item.price * item.quantity).toLocaleString()}</p>
-                            `).join('')}
-                        </div>
-                    `;
-                }
+                const result = await response.json();
+                alert(`Transaction completed! ID: ${result.transactionId}`);
+                posCart = [];
+                updatePOSDisplay();
             } catch (error) {
-                document.getElementById('trackingResult').innerHTML = `<p style="color: #e74c3c;">Error: ${error.message}</p>`;
+                console.error('Error:', error);
+                alert('Error completing transaction');
             }
         }
 
-        // Show section
+        // Chat
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value;
+            if (message) {
+                const messagesDiv = document.getElementById('chatMessages');
+                messagesDiv.innerHTML += `<div style="margin-bottom: 0.5rem;"><strong>You:</strong> ${message}</div>`;
+                input.value = '';
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        }
+
+        // Navigation
         function showSection(sectionId) {
-            document.querySelectorAll('section').forEach(section => {
-                section.style.display = section.id === sectionId ? 'block' : 'none';
-            });
-            window.scrollTo(0, 0);
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.remove('hidden');
+                if (sectionId === 'shop') loadProducts();
+                if (sectionId === 'admin') {
+                    loadInventory();
+                    loadOrders();
+                }
+                if (sectionId === 'pos') searchPOSProducts();
+            }
+        }
+
+        // Utility
+        function editProduct(id) {
+            alert('Edit product ' + id);
+        }
+
+        function updateOrderStatus(id) {
+            alert('Update order ' + id);
+        }
+
+        function sendMessage(event) {
+            event.preventDefault();
+            alert('Message sent!');
         }
     </script>
 </body>
