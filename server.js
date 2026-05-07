@@ -184,7 +184,6 @@ db.serialize(() => {
   // Insert sample variants
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const colors = ['Black', 'Navy', 'Gray', 'White', 'Pink', 'Purple'];
-  
   for (let productId = 1; productId <= 8; productId++) {
     sizes.forEach(size => {
       colors.forEach(color => {
@@ -194,6 +193,30 @@ db.serialize(() => {
       });
     });
   }
+
+  // Insert sample order for testing
+  const sampleOrderNumber = 'ORD-TEST-001';
+  db.run(
+    `INSERT OR IGNORE INTO orders (orderNumber, customerName, customerEmail, customerPhone, address, city, totalAmount, paymentMethod, status, deliveryStatus, trackingNumber, createdAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now', '-2 days'))`,
+    [sampleOrderNumber, 'Test Customer', 'test@example.com', '+95912345678', '123 Main Street', 'Yangon', 268000, 'Cash on Delivery', 'confirmed', 'shipped', 'TRK-123456789'],
+    function(err) {
+      if (!err) {
+        const orderId = this.lastID;
+        // Add sample items to order
+        db.run(
+          `INSERT OR IGNORE INTO orderItems (orderId, productId, productName, quantity, price, size, color)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [orderId, 1, 'Premium Yoga Leggings', 1, 89000, 'M', 'Black']
+        );
+        db.run(
+          `INSERT OR IGNORE INTO orderItems (orderId, productId, productName, quantity, price, size, color)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [orderId, 2, 'High-Performance Sports Top', 2, 59000, 'L', 'Navy']
+        );
+      }
+    }
+ });
 });
 
 // Email configuration
