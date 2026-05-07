@@ -325,9 +325,38 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            display: flex;
+            display: none;
             flex-direction: column;
             z-index: 999;
+        }
+        
+        .chat-widget.active {
+            display: flex;
+        }
+        
+        .chat-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #ff6b35;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 998;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .chat-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .chat-toggle-btn.hidden {
+            display: none;
         }
 
         .chat-header {
@@ -776,8 +805,14 @@
     </section>
 
     <!-- Live Chat Widget -->
+    <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">💬</button>
     <div class="chat-widget" id="chatWidget">
-        <div class="chat-header">💬 Customer Support</div>
+        <div class="chat-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>💬 Customer Support</span>
+                <button onclick="toggleChat()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
+            </div>
+        </div>
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input">
             <input type="text" id="chatInput" placeholder="Type a message...">
@@ -1216,14 +1251,86 @@
         }
 
         // Chat
+        // Toggle Chat Widget
+        function toggleChat() {
+            const chatWidget = document.getElementById('chatWidget');
+            const chatToggleBtn = document.getElementById('chatToggleBtn');
+            chatWidget.classList.toggle('active');
+            if (chatWidget.classList.contains('active')) {
+                chatToggleBtn.classList.add('hidden');
+            } else {
+                chatToggleBtn.classList.remove('hidden');
+            }
+        }
+
         function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value;
             if (message) {
                 const messagesDiv = document.getElementById('chatMessages');
-                messagesDiv.innerHTML += `<div style="margin-bottom: 0.5rem;"><strong>You:</strong> ${message}</div>`;
+                messagesDiv.innerHTML += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: #f0f0f0; border-radius: 4px;"><strong>You:</strong> ${message}</div>`;
                 input.value = '';
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                
+                // Simulate agent response
+                setTimeout(() => {
+                    messagesDiv.innerHTML += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: #e8f4f8; border-radius: 4px;"><strong>Support:</strong> Thank you for your message! We'll respond shortly.</div>`;
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }, 500);
+            }
+        }
+
+        // Track Order Function
+        async function trackOrder() {
+            const orderNumber = document.getElementById('trackOrderNumber').value.trim();
+            if (!orderNumber) {
+                alert('Please enter an order number');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/orders/track/${orderNumber}`);
+                const order = await response.json();
+
+                if (!response.ok) {
+                    alert('Order not found. Please check the order number.');
+                    return;
+                }
+
+                document.getElementById('trackOrderNum').textContent = order.orderNumber;
+                document.getElementById('trackOrderDate').textContent = new Date(order.createdAt).toLocaleDateString();
+                document.getElementById('trackOrderTotal').textContent = order.totalAmount + ' Kyat';
+                document.getElementById('trackPaymentMethod').textContent = order.paymentMethod || 'Not specified';
+                document.getElementById('trackDeliveryStatus').textContent = order.deliveryStatus.toUpperCase();
+                document.getElementById('trackTrackingNumber').textContent = order.trackingNumber || 'N/A';
+                document.getElementById('trackDeliveryAddress').textContent = (order.address || 'N/A') + ', ' + (order.city || 'N/A');
+
+                let itemsHTML = '';
+                if (order.items && order.items.length > 0) {
+                    order.items.forEach(item => {
+                        itemsHTML += '<div style="padding: 1rem; border-bottom: 1px solid #eee;"><strong>' + (item.productName || 'Product') + '</strong><div style="margin-top: 0.5rem;">Qty: ' + (item.quantity || 0) + ' | Size: ' + (item.size || 'N/A') + ' | Color: ' + (item.color || 'N/A') + '</div><div style="color: #ff6b35; margin-top: 0.5rem;">' + (item.price || 0) + ' Kyat</div></div>';
+                    });
+                } else {
+                    itemsHTML = '<div style="padding: 1rem;">No items found</div>';
+                }
+                document.getElementById('trackOrderItems').innerHTML = itemsHTML;
+
+                const statusMap = {'processing': 1, 'shipped': 2, 'out_for_delivery': 3, 'delivered': 4};
+                const currentStep = statusMap[order.deliveryStatus] || 1;
+                const statuses = ['Order Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
+                
+                let timelineHTML = '';
+                statuses.forEach((status, index) => {
+                    const isCompleted = index + 1 <= currentStep;
+                    const color = isCompleted ? '#ff6b35' : '#ddd';
+                    timelineHTML += '<div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;"><div style="width: 30px; height: 30px; background: ' + color + '; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">' + (isCompleted ? '✓' : (index + 1)) + '</div><div><strong>' + status + '</strong><p style="color: #999; font-size: 0.9rem;">Status update</p></div></div>';
+                });
+                
+                document.getElementById('timelineContainer').innerHTML = timelineHTML;
+                document.getElementById('trackingResult').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error tracking order');
             }
         }
 
