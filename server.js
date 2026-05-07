@@ -216,7 +216,7 @@ db.serialize(() => {
         );
       }
     }
- });
+  );
 });
 
 // Email configuration
